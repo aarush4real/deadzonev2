@@ -40,7 +40,7 @@ A multiplayer 3D first-person shooter browser game inspired by Deadshot.io, buil
 ### Phase 6: Post-Launch
 - [ ] Add game modes (free-for-all, team deathmatch, capture the flag)
 - [ ] Implement matchmaking and lobbies
-- [ ] Add social features (friends, clans, chat)
+- [ ] Add social features (friends, clans,compatible platform (e.g., Railway, AWS)
 - [ ] Regular content updates and balance patches
 
 ## Project Structure
@@ -71,6 +71,33 @@ deadzonev2/
 ├── .gitignore              # Git ignore rules
 └── README.md               # This file
 ```
+
+## Lag Compensation Techniques
+
+To ensure a seamless, lag-free gameplay experience, Deadzone v2 implements several lag compensation techniques:
+
+### 1. Client-Side Prediction
+- The client predicts the outcome of its own actions (movement, shooting) immediately without waiting for server confirmation
+- This creates a responsive feel for local actions
+- When the server's authoritative state arrives, the client reconciles any differences
+
+### 2. Server Reconciliation
+- The server is the ultimate authority for game state
+- When there's a discrepancy between client prediction and server state, the client corrects its position
+- This prevents cheating while maintaining smooth gameplay
+
+### 3. Interpolation
+- For rendering other players, the client interpolates between known positions to create smooth movement
+- Instead of jumping directly to new positions, players appear to glide between updates
+- This masks the effects of network latency
+
+### 4. Extrapolation (with limits)
+- For very short periods when updates are delayed, the client may extrapolate based on last known velocity
+- This is used sparingly to avoid "rubber-banding" effects
+
+### 5. Lag Compensation for Hit Detection
+- When determining if a shot hit another player, the server rewinds time to check positions at the moment the shot was fired
+- This ensures that players with high ping aren't disadvantaged when shooting
 
 ## Getting Started
 
