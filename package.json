@@ -9,8 +9,7 @@
     "client": "npm start --prefix client",
     "server": "npm start --prefix server",
     "build": "mkdir -p dist && cp -r client/public/* dist/"
-  }
-},
+  },
   "devDependencies": {
     "concurrently": "^8.2.0"
   }
