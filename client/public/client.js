@@ -39,11 +39,13 @@ const CONSTANTS = {
     SLIDE_SPEED_MULTIPLIER: 1.5,
     SLIDE_DURATION: 0.3,
     BULLET_SPEED: 100,
-    BULLET_LIFETIME: 1,
+    BULLET_LIFETIME: 2,
     MOUSE_SENSITIVITY: 0.002,
     MAP_SIZE: 200,
     PLAYER_HEIGHT: 1.8,
-    PLAYER_WIDTH: 0.5
+    PLAYER_WIDTH: 0.5,
+    RESPA_TIME: 3, // seconds
+    MAX_PLAYERS_PER_MATCH: 16
 };
 
 // Initialize the game
@@ -76,7 +78,7 @@ function initThreeJS() {
     gameState.scene.add(dirLight);
 
     // Create simple ground plane
-    const groundGeometry = new THREE.PlaneGeometry(CONSTANTS.MAP_SIZE, CONSTANTS.MAP_SIZE);
+    const groundGeometry = new THREE.PlaneGeometry(CONstants.MAP_SIZE, CONSTANTS.MAP_SIZE);
     const groundMaterial = new THREE.MeshStandardMaterial({ color: 0x228b22 });
     const ground = new THREE.Mesh(groundGeometry, groundMaterial);
     ground.rotation.x = -Math.PI / 2;
@@ -118,7 +120,7 @@ function createPlayerModel() {
 // Create simple obstacles on the map
 function createObstacles() {
     const geometry = new THREE.BoxGeometry(10, 10, 10);
-    const material = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
+    const material = new THREE.MeshStandardMaterial({ color: { color: 0x8b4513 };
 
     // Create a few random boxes
     for (let i = 0; i < 20; i++) {
@@ -197,8 +199,10 @@ function initEventListeners() {
 
 // Initialize socket connection
 function initSocket() {
-    // In production, this would be your deployed server URL
-    gameState.socket = io({ transports: ['websocket'] });
+    // Determine socket URL: allow override via window.SOCKET_URL (set via server/env or config)
+    const socketUrl = (window.SOCKET_URL && window.SOCKET_URL.trim()) ? window.SOCKET_URL.trim() : undefined;
+    const opts = { transports: ['websocket'] };
+    gameState.socket = socketUrl ? io(socketUrl, opts) : io(opts);
 
     gameState.socket.on('connect', () => {
         console.log('Connected to server');
@@ -295,9 +299,8 @@ function addOtherPlayer(playerData) {
     const head = new THREE.Mesh(headGeometry, headMaterial);
     head.position.y = height * 0.85;
 
-    const group = new THREE.Group();
-    group.add(cylinder);
-    group.add(head);
+    const group;
+    group group.add(head);
     group.userData.id = playerData.id;
     group.userData.isOtherPlayer = true;
 
@@ -305,8 +308,8 @@ function addOtherPlayer(playerData) {
     gameState.otherPlayerModels[playerData.id] = group;
 
     // Set initial position and rotation
-    group.position.copy(new THREE.Vector3(playerData.position.x, playerData.position.y, playerData.position.z));
-    group.rotation.set(playerData.rotation.x, playerData.rotation.y, playerData.rotation.z);
+    group.position.set(playerData.position.x, playerData.position.y, playerData.position.z);
+    group.rotation.set(playerData.rotation.x, playerData.rotation.y, playerData.rotation.z, 'XYZ');
 }
 
 // Update another player's position and rotation
@@ -495,7 +498,7 @@ function addToKillFeed(killer, victim, weapon) {
         <span class="victim">${victim}</span>
         <span class="weapon"> with ${weapon}</span>
     `;
-    feed.insertBefore(element, feed.firstChild);
+    feed.prepend(entry);
 
     // Keep only last 5 entries
     while (feed.children.length > 5) {
@@ -510,7 +513,7 @@ function animate() {
     const delta = gameState.clock.getDelta();
 
     // Update player movement
-    updatePlayerMovement(deltaTime);
+    updatePlayerMovement(delta);
 
     // Update other game logic (bullets, etc.) would go here
 
