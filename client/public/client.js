@@ -120,7 +120,7 @@ function createPlayerModel() {
 // Create simple obstacles on the map
 function createObstacles() {
     const geometry = new THREE.BoxGeometry(10, 10, 10);
-    const material = new THREE.MeshStandardMaterial({ color: { color: 0x8b4513 };
+    const material = new THREE.MeshStandardMaterial({ color: 0x8b4513 });
 
     // Create a few random boxes
     for (let i = 0; i < 20; i++) {
@@ -307,8 +307,9 @@ function addOtherPlayer(playerData) {
     const head = new THREE.Mesh(headGeometry, headMaterial);
     head.position.y = height * 0.85;
 
-    const group;
-    group group.add(head);
+    const group = new THREE.Group();
+    group.add(cylinder);
+    group.add(head);
     group.userData.id = playerData.id;
     group.userData.isOtherPlayer = true;
 

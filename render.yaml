@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: deadzone-server
+    env: node
+    buildCommand: cd server && npm install
+    startCommand: cd server && npm start
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        fromDatabase:
+          name: deadzone-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+    autoDeploy: true
+    plan: free
