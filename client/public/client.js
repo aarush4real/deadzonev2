@@ -199,8 +199,16 @@ function initEventListeners() {
 
 // Initialize socket connection
 function initSocket() {
-    // Determine socket URL: allow override via window.SOCKET_URL (set via server/env or config)
-    const socketUrl = (window.SOCKET_URL && window.SOCKET_URL.trim()) ? window.SOCKET_URL.trim() : undefined;
+    // Determine socket URL: allow override via window.SOCKET_URL (set via server/env or config) or meta tag
+    let socketUrl = undefined;
+    if (window.SOCKET_URL && window.SOCKET_URL.trim()) {
+        socketUrl = window.SOCKET_URL.trim();
+    } else {
+        const meta = document.querySelector('meta[name="socket-url"]');
+        if (meta && meta.content) {
+            socketUrl = meta.content;
+        }
+    }
     const opts = { transports: ['websocket'] };
     gameState.socket = socketUrl ? io(socketUrl, opts) : io(opts);
 
