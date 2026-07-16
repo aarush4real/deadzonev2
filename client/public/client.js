@@ -1,5 +1,5 @@
 // Main client entry point
-import * as THREE from 'three';
+// THREE is loaded via the global variable from the three.js script tag
 
 // Global game state
 const gameState = {
