@@ -1,6 +1,7 @@
 {
   "name": "deadzonev2",
   "version": "1.0.0",
+  "type": "module",
   "description": "Multiplayer FPS game inspired by Deadshot.io",
   "scripts": {
     "install-all": "npm install && cd client && npm install && cd ../server && npm install",
